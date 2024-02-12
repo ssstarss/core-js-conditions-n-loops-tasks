@@ -372,29 +372,28 @@ function rotateMatrix(matrix) {
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
 function sortByAsc(arr) {
-  function sortArr(a) {
-    let temp = a;
-    if (temp.length <= 1) {
-      return temp;
-    }
-    const p = temp[0];
-    let left = [];
-    let right = [];
-    for (let i = 1; i < temp.length; i += 1) {
-      if (temp[i] < p) {
-        left = [...left, temp[i]];
-      } else {
-        right = [...right, temp[i]];
+  function sort(arrIn, start = 0, end = arrIn.length - 1) {
+    const result = arrIn;
+    if (start < end) {
+      const p = result[end];
+      let i = start - 1;
+      for (let j = start; j <= end - 1; j += 1) {
+        if (arrIn[j] < p) {
+          i += 1;
+          const tmp = result[i];
+          result[i] = result[j];
+          result[j] = tmp;
+        }
       }
+      const tmp = arrIn[i + 1];
+      result[i + 1] = arrIn[end];
+      result[end] = tmp;
+      sort(arr, start, i);
+      sort(arr, i + 2, end);
     }
-    temp = [...sortArr(left), p, ...sortArr(right)];
-    return temp;
+    return result;
   }
-  const temp = arr;
-  const m = sortArr(temp);
-  const s = arr;
-  for (let i = 0; i < m.length; i += 1) s[i] = m[i];
-  return arr;
+  return sort(arr);
 }
 
 /**
@@ -414,17 +413,19 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(str, iteration) {
-  const indexes = [];
-  for (let i = 0; i < str.length; i += 1) indexes[i] = i;
-  for (let i = 0; i < iteration; i += 1)
-    for (let j = 1; j < indexes.length - 1; j += 1)
-      if (indexes[j] % 2 === 0) indexes[j] /= 2;
-      else indexes[j] = str.length / 2 + Math.floor(indexes[j] / 2);
-  const res = [];
-  let result = '';
-  for (let i = 0; i < str.length; i += 1) res[indexes[i]] = str[i];
-  for (let i = 0; i < str.length; i += 1) result += res[i];
+
+function shuffleChar(str, iterations) {
+  let result = str;
+  for (let i = 1; i <= iterations; i += 1) {
+    let even = '';
+    let odd = '';
+    for (let j = 0; j < result.length - 1; j += 2) {
+      even += result[j];
+      odd += result[j + 1];
+    }
+    result = even + odd;
+    if (result === str) return shuffleChar(str, iterations % i);
+  }
   return result;
 }
 
